@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"]='mysql+pymysql://root:@localhost:3306/blog'
 app.config["SQLALCHEMY_TRACK_MODIFICATION"]=False
+app.config["SECRET_KEY"]="SECRET"
 db= SQLAlchemy(app)
 migrate = Migrate(app=app,db=db)
 from mod_admin import admin
