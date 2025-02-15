@@ -3,6 +3,7 @@ from . import user
 from .form import Register
 from .models import User
 from app import db
+from sqlalchemy.exc import IntegrityError
 @user.route('/')
 def index():
     return "hello user"
@@ -21,9 +22,15 @@ def register():
         newuser.fullname=form.fullname.data
         newuser.email = form.email.data
         newuser.set_password(form.password.data)
-        db.session.add(newuser)
-        db.session.commit()
-        flash("new user added successfully ")
+        try:
+            db.session.add(newuser)
+            db.session.commit()
+            flash("new user added successfully ","bg-success")
+        except IntegrityError:
+            db.session.rollback()
+            flash("email is in use","bg-danger")
+            return render_template('user/register.html' ,form=form)
+    
         return render_template('user/register.html' ,form=form)
 
         

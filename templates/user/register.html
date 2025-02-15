@@ -2,11 +2,12 @@
 {% block title%} register {% endblock %}
 {% block content %}
  <h1> register user:</h1>
- {% with messages = get_flashed_messages() %}
+ {% with messages = get_flashed_messages(True) %}
  {% if messages %}
+ 
  {% for message in messages %}
- <h3>
-    {{ message }}
+ <h3 class="{{ message[0]}}">
+    {{ message[1] }}
  </h3>
  {% endfor %}
  {% endif %}
