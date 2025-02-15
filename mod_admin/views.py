@@ -1,4 +1,5 @@
 from flask import flash, session , render_template,request,abort
+from werkzeug.security import check_password_hash
 from  mod_user.form import Loginform
 # from models import User
 from mod_user.models import User
@@ -21,7 +22,8 @@ def login():
         if not user:
             flash("incorrect credential")
             return render_template('admin/login.html',form=form)
-        if  not user.check_password(password.data):
+        if not check_password_hash(user.password, password.data):
+            breakpoint()
             flash("incorrect credential")
             return render_template('admin/login.html',form=form)
         session["email"]= user.email

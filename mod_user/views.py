@@ -1,14 +1,34 @@
-from flask import session, request,render_template
+from flask import session, request,render_template,flash
 from . import user
+from .form import Register
+from .models import User
+from app import db
 @user.route('/')
 def index():
     return "hello user"
-# @user.route('/login',methods=["POST","GET"])
-# def login():
-#     # session['user']="mahdi"
-#     if request.method =="GET" :
-#         form = Form()   
-#         return render_template('admin/login.html',form=form)
-     
+@user.route('/register/',methods=["POST","GET"])
+def register():
+    form = Register(request.form)
+    if request.method == "POST":
+        if  not form.validate_on_submit():
+            render_template('user/register.html',form=form)
+        if   not form.password.data == form.confirm_password.data :
+            message=" password and confirm password are not equal"
+            form.password.errors.append(message)
+            form.confirm_password.errors.append(message)   
+            return render_template('user/register.html' ,form=form)
+        newuser = User()
+        newuser.fullname=form.fullname.data
+        newuser.email = form.email.data
+        newuser.set_password(form.password.data)
+        db.session.add(newuser)
+        db.session.commit()
+        flash("new user added successfully ")
+        return render_template('user/register.html' ,form=form)
 
-#     return session['user']
+        
+        
+
+    return render_template('user/register.html' ,form=form)
+
+

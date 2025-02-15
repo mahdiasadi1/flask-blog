@@ -8,14 +8,13 @@ from app import db
 class User(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     email = db.Column(db.String(120),nullable=False,unique=True)
-    password = db.Column(db.String(120),nullable=False)
-    role = db.Column(db.Integer)
+    password = db.Column(db.String(300),nullable=False)
+    # confirm_password = db.Column(db.String(120),nullable=False)
+    role = db.Column(db.Integer,default=0)
+    fullname=db.Column(db.String(150),nullable=True)
     def set_password(self,password):
         self.password=generate_password_hash(password)
     def check_password(self,password):
        
-        # return check_password_hash(self.password,password)    
-        if self.password == password:
-            return True
-        else:
-            return False
+        return check_password_hash(self.password,password)    
+       
