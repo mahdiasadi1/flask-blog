@@ -1,5 +1,7 @@
 from flask import session,abort
+from functools import wraps
 def protected_view(func):
+    @wraps(func)
     def innter_func(*args,**kwarg):
         print(session)
         if session.get('user_id') is None:

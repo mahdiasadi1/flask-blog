@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul>
+    <li><a href="{{ url_for('admin.admin_index') }}"> admin panel</a></li>
+    <li><a href="{{ url_for('admin.logout') }}"> logout</a></li>
+    <li><a href="{{ url_for('admin.create_post') }}">create new post</a></li>
+</ul>
+<div>
+    {% with messages = get_flashed_messages(True) %}
+    {% if messages %}
+    {% for message in messages %}
+    <li class="{{ message[0] }}">
+        {{ message[1] }}
+    </li>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+{% block content_area %}
+
+{% endblock %}
+{% endblock %}
