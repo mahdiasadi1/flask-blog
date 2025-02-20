@@ -4,6 +4,7 @@
     <li><a href="{{ url_for('admin.admin_index') }}"> admin panel</a></li>
     <li><a href="{{ url_for('admin.logout') }}"> logout</a></li>
     <li><a href="{{ url_for('admin.create_post') }}">create new post</a></li>
+    <li><a href="{{ url_for('admin.list_post') }}"> list posts</a></li>
 </ul>
 <div>
     {% with messages = get_flashed_messages(True) %}

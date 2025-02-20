@@ -73,3 +73,17 @@ def create_post():
     else: 
         print("no fuck")      
         return render_template('admin/create_post.html',form=form)
+@admin.route('/list_post/',methods=["GET","POST"])
+@protected_view
+def list_post():
+    posts = Post.query.all()
+    return render_template('admin/list_post.html',posts = posts)
+@admin.route('post/delete/<int:id>')
+@protected_view
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    db.session.delete(post)
+    db.session.commit()
+    flash("post deleted successfully", "bg-danger text-white")
+    return redirect(url_for('admin.list_post'))
+ 
