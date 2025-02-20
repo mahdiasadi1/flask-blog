@@ -86,4 +86,25 @@ def delete_post(id):
     db.session.commit()
     flash("post deleted successfully", "bg-danger text-white")
     return redirect(url_for('admin.list_post'))
- 
+@admin.route('post/modify/<int:id>',methods=["GET","POST"])
+@protected_view
+def modify_post(id):
+        
+    post=Post.query.get_or_404(id)
+    form = Postform(obj=post)
+    if request.method =="POST":
+        if not form.validate_on_submit():
+            return render_template('admin/modify_post.html',form = form,post=post) 
+        post.title = form.title.data
+        post.summary = form.summary.data
+        post.slug = form.slug.data
+        post.content = form.content.data
+        try:
+            db.session.commit()
+            flash("update successfully",'text-success')
+            return redirect(url_for('admin.list_post'))
+        except IntegrityError:
+            db.session.rollback()
+            flash("your slug is already taken")
+            return render_template('admin/modify_post.html',form = form,post=post)    
+    return render_template('admin/modify_post.html',form = form,post=post) 

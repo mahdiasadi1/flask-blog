@@ -23,7 +23,9 @@
                     </td>
                     <td>{{ post.summary }}</td>
                     <td>
-                        <a href="{{ url_for('admin.delete_post',id=post.id)}}" class="btn btn-success"> delete</a>
+                        <a href="{{ url_for('admin.delete_post',id=post.id)}}" class="btn btn-danger"> delete</a>
+                        <a href="{{ url_for('admin.modify_post',id=post.id)}}" class="btn btn-success"> edit</a>
+
                     </td>
                     
                 </tr>
