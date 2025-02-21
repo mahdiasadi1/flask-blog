@@ -5,8 +5,8 @@ from  mod_user.form import Loginform
 from mod_user.models import User
 from . import admin
 from .utils import protected_view
-from mod_blog.forms import Postform
-from mod_blog.models import Post
+from mod_blog.forms import Postform,Categoryform
+from mod_blog.models import Post ,Category
 from app import db
 from sqlalchemy.exc import IntegrityError
 @admin.route('/')
@@ -108,3 +108,62 @@ def modify_post(id):
             flash("your slug is already taken")
             return render_template('admin/modify_post.html',form = form,post=post)    
     return render_template('admin/modify_post.html',form = form,post=post) 
+############################ 
+@admin.route('/category/new',methods=["POST","GET"])
+@protected_view
+def create_category():
+    form = Categoryform(request.form)
+    if request.method == 'POST':
+        print ("fuck")
+        if not form.validate_on_submit():
+            return 1
+        
+        newcategory  = Category()
+        newcategory.name = form.name.data
+        newcategory.slug = form.slug.data
+        newcategory.description=form.description.data
+        try:
+            db.session.add(newcategory)
+            db.session.commit()
+            flash("new category created successfully " , "success")
+            return redirect(url_for('admin.admin_index'))
+        except  IntegrityError: 
+            db.session.rollback()   
+    else: 
+        print("no fuck")      
+        return render_template('admin/create_category.html',form=form)
+@admin.route('/list_category/',methods=["GET","POST"])
+@protected_view
+def list_category():
+    categories = Category.query.all()
+    return render_template('admin/list_category.html',categories = categories)
+@admin.route('categoriy/delete/<int:id>')
+@protected_view
+def delete_category(id):
+    category = Category.query.get_or_404(id)
+    db.session.delete(category)
+    db.session.commit()
+    flash("category deleted successfully", "bg-danger text-white")
+    return redirect(url_for('admin.list_category'))
+@admin.route('category/modify/<int:id>',methods=["GET","POST"])
+@protected_view
+
+def modify_category(id):
+        
+    category=Category.query.get_or_404(id)
+    form = Categoryform(obj=category)
+    if request.method =="POST":
+        if not form.validate_on_submit():
+            return render_template('admin/modify_category.html',form = form,category=category) 
+        category.name = form.name.data
+        category.description = form.description.data
+        category.slug = form.slug.data
+        try:
+            db.session.commit()
+            flash("update successfully",'text-success')
+            return redirect(url_for('admin.list_category'))
+        except IntegrityError:
+            db.session.rollback()
+            flash("your slug is already taken")
+            return render_template('admin/modify_category.html',form = form,category=category)    
+    return render_template('admin/modify_category.html',form = form,category=category)     

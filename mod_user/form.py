@@ -9,5 +9,6 @@ class Register(FlaskForm):
     password = PasswordField(validators=[DataRequired()])
     confirm_password = PasswordField(validators=[DataRequired()])
     fullname = StringField()
+        
 
     

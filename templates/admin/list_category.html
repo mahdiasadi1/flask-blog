@@ -1,0 +1,39 @@
+{% extends 'admin/base.html' %}
+{% block title %} admin category list 
+{% endblock %}
+{% block content_area %}
+<div class="container mt-4">
+    <h2>List of categorys</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>name</th>
+                    <th>action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td> {{ category.id}} </td>
+                    <td>
+                       <a href="{{ url_for('blog.single_category',slug=category.slug)}}">     {{ category.name }}</a> 
+                                                </td>
+                    <td>
+                        <a href="{{ url_for('admin.delete_category',id=category.id)}}" class="btn btn-danger"> delete</a>
+                        <a href="{{ url_for('admin.modify_category',id=category.id)}}" class="btn btn-success"> edit</a>
+
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+  
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
+{% endblock %}

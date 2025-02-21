@@ -6,4 +6,8 @@ class Postform (FlaskForm):
     summary = StringField()
     content=TextAreaField(validators=[DataRequired()])
     slug=StringField(validators=[DataRequired()])
+class Categoryform(FlaskForm):
+    name = StringField(validators=[DataRequired()])
+    description=TextAreaField()
+    slug=StringField(validators=[DataRequired()])    
 
