@@ -9,6 +9,10 @@ from mod_blog.forms import Postform,Categoryform
 from mod_blog.models import Post ,Category
 from app import db
 from sqlalchemy.exc import IntegrityError
+from mod_uploads.forms import Fileform
+from mod_uploads.models import uploads
+from werkzeug.utils import secure_filename
+import uuid
 @admin.route('/')
 @protected_view
 def admin_index():
@@ -50,6 +54,8 @@ def logout():
 @protected_view
 def create_post():
     form = Postform(request.form)
+    form.categories.choices = [(category.id, category.name) for category in Category.query.all()]
+
     if request.method == 'POST':
         print ("fuck")
         if not form.validate_on_submit():
@@ -63,6 +69,8 @@ def create_post():
         newpost.summary = summary
         newpost.slug=slug
         newpost.content = content
+        newpost.categories = Category.query.filter(Category.id.in_(form.categories.data)).all()
+
         try:
             db.session.add(newpost)
             db.session.commit()
@@ -91,7 +99,13 @@ def delete_post(id):
 def modify_post(id):
         
     post=Post.query.get_or_404(id)
+    
     form = Postform(obj=post)
+    form.categories.choices = [(category.id, category.name) for category in Category.query.all()]
+    if request.method=="GET":
+        form.categories.data = [category.id for category in post.categories]  # مقداردهی اولیه چک‌باکس‌ها
+    
+
     if request.method =="POST":
         if not form.validate_on_submit():
             return render_template('admin/modify_post.html',form = form,post=post) 
@@ -99,6 +113,10 @@ def modify_post(id):
         post.summary = form.summary.data
         post.slug = form.slug.data
         post.content = form.content.data
+        post.categories = Category.query.filter(Category.id.in_(form.categories.data)).all()
+        # post.categories = Category.query.filter(Category.id.in_(form.categories.data)).all()  # تنظیم دسته‌های انتخابی
+
+
         try:
             db.session.commit()
             flash("update successfully",'text-success')
@@ -166,4 +184,20 @@ def modify_category(id):
             db.session.rollback()
             flash("your slug is already taken")
             return render_template('admin/modify_category.html',form = form,category=category)    
-    return render_template('admin/modify_category.html',form = form,category=category)     
+    return render_template('admin/modify_category.html',form = form,category=category)   
+
+@admin.route('/library/upload',methods=["GET","POST"])  
+@protected_view
+def upload_file():
+    form = Fileform()
+    if request.method =="POST":
+        if not form.validate_on_submit():
+            return 5
+        newfile= uploads()
+        filename =f'{uuid.uuid1()} {secure_filename(form.file.data.filename)}'
+        newfile.filename=filename
+        db.session.add(newfile)
+        db.session.commit()
+        form.file.data.save(f'static/uploads/{filename}')
+        flash('file uploaded','text-success')
+    return render_template('admin/upload_file.html',form=form)
